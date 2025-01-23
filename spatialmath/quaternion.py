@@ -668,6 +668,32 @@ class Quaternion(BasePoseList):
         """
         return left.__mul__(right)
 
+    def __imatmul__(
+        left, right: Quaternion
+    ) -> bool:  # lgtm[py/not-named-self] pylint: disable=no-self-argument
+        """
+        Overloaded ``@=`` operator
+
+        :return: product
+        :rtype: Quaternion
+        :raises: ValueError
+
+        ``q1 @= q2`` sets ``q1 := qnorm(q1 * q2`)`
+
+        Example:
+
+        .. runblock:: pycon
+
+            >>> from spatialmath import Quaternion
+            >>> q = UnitQuaternion.Eul([0.1, 0.2, 0.3])
+            >>> q @= Quaternion.Eul([0.3, 0.4, 0.5])
+            >>> print(q)
+
+
+        :seealso: :func:`__mul__`
+        """
+        return left.__mul__(right)
+
     def __pow__(self, n: int) -> Quaternion:
         """
         Overloaded ``**`` operator
@@ -1885,8 +1911,6 @@ class UnitQuaternion(Quaternion):
 
         - ``q1 @ q2`` is the Hamilton product of ``q1`` and ``q2``, both unit
           quaternions, followed by explicit normalization.
-
-        - `` q1 @= q2`` as above.
 
         .. note:: This operator is functionally equivalent to ``*`` but is more
             costly.  It is useful for cases where a pose is incrementally update
