@@ -1152,14 +1152,9 @@ def q2str(
     return template.format(q[0], delim[0], q[1], q[2], q[3], delim[1])
 
 
-def qprint(
-    q: Union[ArrayLike4, ArrayLike4],
-    delim: Optional[Tuple[str, str]] = ("<", ">"),
-    fmt: Optional[str] = "{: .4f}",
-    file: Optional[TextIO] = sys.stdout,
-) -> None:
+def qprint(q: Union[ArrayLike4, ArrayLike4], file=False, **kwargs) -> None:
     """
-    Format a quaternion to a file
+    Compact single-line display of a quaternion
 
     :arg q: unit-quaternion
     :type q: array_like(4)
@@ -1195,7 +1190,9 @@ def qprint(
             "Usage: qprint(..., file=None) -> str is deprecated, use q2str() instead",
             DeprecationWarning,
         )
-    print(q2str(q, delim=delim, fmt=fmt), file=file)
+    if file is False:
+        file = None  # defaults to stdout
+    print(q2str(q, **kwargs), file=file)
 
 
 if __name__ == "__main__":  # pragma: no cover
