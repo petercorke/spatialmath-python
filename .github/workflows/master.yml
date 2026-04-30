@@ -15,8 +15,8 @@ jobs:
   unittest:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         os: [windows-latest, ubuntu-22.04, macos-latest]
         # https://devguide.python.org/versions/
         python-version: ["3.10", "3.11", "3.12", "3.13"]
