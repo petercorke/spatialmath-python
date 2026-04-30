@@ -40,7 +40,7 @@ jobs:
       env:
         MPLBACKEND: Agg
       run: |
-        pytest -s --timeout=1000 --timeout_method=thread
+        pytest -s --timeout=50 --timeout_method=thread
 
   all-unittests-passed:
     needs: unittest
