@@ -39,7 +39,7 @@ jobs:
       env:
         MPLBACKEND: Agg
       run: |
-        pytest -s --ignore=W605 --timeout=50 --timeout_method=thread
+        pytest -s --timeout=50 --timeout_method=thread
 
   codecov:
     # If all tests pass:
