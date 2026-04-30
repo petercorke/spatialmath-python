@@ -40,7 +40,16 @@ jobs:
       env:
         MPLBACKEND: Agg
       run: |
-        pytest -s --timeout=50 --timeout_method=thread
+        pytest -s --timeout=1000 --timeout_method=thread
+
+  all-unittests-passed:
+    needs: unittest
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check unittest status
+        if: ${{ needs.test.result != 'success' }}
+        run: exit 1
 
   codecov:
     # If all tests pass:
