@@ -945,7 +945,7 @@ class Twist3(BaseTwist):
             >>> S.pitch
 
         """
-        return np.dot(self.w, self.v)
+        return np.dot(self.w, self.v) / np.dot(self.w, self.w)
 
     def line(self):
         """
