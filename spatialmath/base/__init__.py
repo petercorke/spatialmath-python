@@ -210,6 +210,7 @@ __all__ = [
     "qprint",
     "q2str",
     # spatialmath.base.transforms2d
+    "pos2tr2",
     "rot2",
     "trot2",
     "transl2",
@@ -219,6 +220,9 @@ __all__ = [
     "trexp2",
     "trnorm2",
     "tr2jac2",
+    "tr2pos2",
+    "tr2adjoint2",
+    "tradjoint2",
     "trinterp2",
     "trprint2",
     "trplot2",
