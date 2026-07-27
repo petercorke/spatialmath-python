@@ -115,42 +115,41 @@ try:
         Plot one or more points, with optional text label.
 
         - The color of the marker can be different to the color of the text, the
-        marker color is specified by a single letter in the marker string.
+          marker color is specified by a single letter in the marker string.
 
         - A point can have multiple markers, given as a list, which will be
-        overlaid, for instance ``["rx", "ro"]`` will give a ⨂ symbol.
+          overlaid, for instance ``["rx", "ro"]`` will give a ⨂ symbol.
 
         - The optional text label is placed to the right of the marker, and
-        vertically aligned.
+          vertically aligned.
 
         - Multiple points can be marked if ``pos`` is a 2xn array or a list of
-        coordinate pairs.  In this case:
+          coordinate pairs.  In this case:
 
             - all points have the same ``text`` label
             - ``text`` can include the format string {} which is susbstituted for the
-            point index, starting at zero
+              point index, starting at zero
             - ``text`` can be a tuple containing a format string followed by vectors
-            of shape(n).  For example::
+              of shape(n).  For example::
 
-                ``("#{0} a={1:.1f}, b={2:.1f}", a, b)``
+                ("#{0} a={1:.1f}, b={2:.1f}", a, b)
 
             will label each point with its index (argument 0) and consecutive
             elements of ``a`` and ``b`` which are arguments 1 and 2 respectively.
 
         Example::
 
-            >>> from spatialmath.base import plotvol2, plot_text
+            >>> from spatialmath.base import plotvol2, plot_point
             >>> plotvol2(5)
-            >>> plot_point((0, 0))        # plot default marker at coordinate (1,2)
+            >>> plot_point((0,0))        # plot default marker at coordinate (1,2)
             >>> plot_point((1,1), 'r*')  # plot red star at coordinate (1,2)
-            >>> plot_point((2,2), 'r*', 'foo')  # plot red star at coordinate (1,2) and
-        label it as 'foo'
+            >>> plot_point((2,2), 'r*', 'foo')  # plot red star at coordinate (1,2) and label it as 'foo'
 
         .. plot::
 
-            from spatialmath.base import plotvol2, plot_text
+            from spatialmath.base import plotvol2, plot_point
             ax = plotvol2(5)
-            plot_point((0, 0))
+            plot_point((0,0))
             plot_point((1,1), 'r*')
             plot_point((2,2), 'r*', 'foo')
             ax.grid()
@@ -846,13 +845,15 @@ try:
         The ellipse is defined by :math:`x^T \mat{E} x = s^2` where :math:`x \in
         \mathbb{R}^2` and :math:`s` is the scale factor.
 
-        .. note:: For some common cases we require :math:`\mat{E}^{-1}`, for example
+        .. note::
+            For some common cases we require :math:`\mat{E}^{-1}`, for example:
+
             - for robot manipulability
-            :math:`\nu (\mat{J} \mat{J}^T)^{-1} \nu` i
+              :math:`\nu (\mat{J} \mat{J}^T)^{-1} \nu` i
             - a covariance matrix
-            :math:`(x - \mu)^T \mat{P}^{-1} (x - \mu)`
-            so to avoid inverting ``E`` twice to compute the ellipse, we flag that
-            the inverse is provided using ``inverted``.
+              :math:`(x - \mu)^T \mat{P}^{-1} (x - \mu)`
+              so to avoid inverting ``E`` twice to compute the ellipse, we flag that
+              the inverse is provided using ``inverted``.
 
         Returns a set of ``resolution``  that lie on the circumference of a circle
         of given ``center`` and ``radius``.
@@ -1101,7 +1102,7 @@ try:
         .. note::
 
             - If a confidence interval is given then ``E`` is interpretted as a covariance
-            matrix and the ellipse size is computed using an inverse chi-squared function.
+              matrix and the ellipse size is computed using an inverse chi-squared function.
 
         :seealso: :func:`~matplotlib.pyplot.plot_surface`, :func:`~matplotlib.pyplot.plot_wireframe`
         """
