@@ -2785,7 +2785,6 @@ def tr2str(
     T: Union[SO3Array, SE3Array],
     orient: str = "rpy/zyx",
     label: str = "",
-    file: TextIO = None,
     fmt: str = "{:.3g}",
     degsym: bool = True,
     unit: str = "deg",
@@ -2904,7 +2903,15 @@ def _vec2s(fmt, v):
     return ", ".join([fmt.format(x) for x in v])
 
 
-def trprint(T: Union[SO3Array, SE3Array], file=False, **kwargs) -> str:
+def trprint(
+    T: Union[SO3Array, SE3Array],
+    orient: str = "rpy/zyx",
+    label: str = "",
+    file: TextIO = False,
+    fmt: str = "{:.3g}",
+    degsym: bool = True,
+    unit: str = "deg",
+) -> str:
     """
      Compact single-line display of SO(3) or SE(3) matrices
 
@@ -2962,20 +2969,28 @@ def trprint(T: Union[SO3Array, SE3Array], file=False, **kwargs) -> str:
          - For tabular data set ``fmt`` to a fixed width format such as
            ``fmt='{:.3g}'``
 
-    .. versionchanged:: 1.1.15
-        To create a string use :func:`~tr2str` instead of ``trprint(...file=None)``
+    .. deprecated:: 1.1.15
+        ``file=None`` to get the string back without printing is
+        deprecated - call :func:`~tr2str` directly instead.
 
      :seealso: :func:`~tr2str` :func:`~spatialmath.base.transforms2d.trprint2` :func:`~tr2eul` :func:`~tr2rpy` :func:`~tr2angvec`
      :SymPy: not supported
     """
+    s = tr2str(T, orient=orient, label=label, fmt=fmt, degsym=degsym, unit=unit)
     if file is None:
+        # deprecated: return the string without printing, matching the
+        # original `if file: print(...)` falsy-skip behaviour
         warnings.warn(
             "Usage: trprint(..., file=None) -> str is deprecated, use tr2str() instead",
             DeprecationWarning,
         )
-    if file is False:
-        file = None  # defaults to stdout
-    print(tr2str(T, **kwargs), file=file)
+    else:
+        # file=False (the default) resolves to None here so print() looks
+        # up the *current* sys.stdout at call time, not whatever it was
+        # when this function was defined - that's what makes
+        # contextlib.redirect_stdout() work.
+        print(s, file=None if file is False else file)
+    return s
 
 
 try:

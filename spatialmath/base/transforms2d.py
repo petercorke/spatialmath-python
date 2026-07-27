@@ -963,7 +963,6 @@ def trinterp2(start, end, s, shortest: bool = True):
 def tr2str2(
     T: Union[SO2Array, SE2Array],
     label: str = "",
-    file: TextIO = None,
     fmt: str = "{:.3g}",
     unit: str = "deg",
 ) -> str:
@@ -974,8 +973,6 @@ def tr2str2(
     :type T: ndarray(3,3) or ndarray(2,2)
     :param label: text label to put at start of line
     :type label: str
-    :param file: file to write formatted string to
-    :type file: file object
     :param fmt: conversion format for each number
     :type fmt: str
     :param unit: angular units: 'rad' [default], or 'deg'
@@ -1101,19 +1098,25 @@ def trprint2(
         - For tabular data set ``fmt`` to a fixed width format such as
           ``fmt='{:.3g}'``
 
-    .. versionchanged:: 1.1.15
-        To create a string use :func:`~tr2str2` instead of ``trprint2(...file=None)``
+    .. deprecated:: 1.1.15
+        ``file=None`` to get the string back without printing is
+        deprecated - call :func:`~tr2str2` directly instead.
 
     :seealso: :func:`~tr2str2` :func:`~trprint`
     """
+    s = tr2str2(T, label=label, **kwargs)
     if file is None:
         warnings.warn(
             "Usage: trprint2(..., file=None) -> str is deprecated, use tr2str2() instead",
             DeprecationWarning,
         )
-    if file is False:
-        file = None  # defaults to stdout
-    print(tr2str2(T, **kwargs), file=file)
+    else:
+        # file=False (the default) resolves to None here so print() looks
+        # up the *current* sys.stdout at call time, not whatever it was
+        # when this function was defined - that's what makes
+        # contextlib.redirect_stdout() work.
+        print(s, file=None if file is False else file)
+    return s
 
 
 def points2tr2(p1: NDArray, p2: NDArray) -> SE2Array:

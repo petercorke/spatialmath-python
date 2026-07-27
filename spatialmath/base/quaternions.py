@@ -1152,7 +1152,12 @@ def q2str(
     return template.format(q[0], delim[0], q[1], q[2], q[3], delim[1])
 
 
-def qprint(q: Union[ArrayLike4, ArrayLike4], file=False, **kwargs) -> None:
+def qprint(
+    q: Union[ArrayLike4, ArrayLike4],
+    delim: Optional[Tuple[str, str]] = ("<", ">"),
+    fmt: Optional[str] = "{: .4f}",
+    file: Optional[TextIO] = False,
+) -> str:
     """
     Compact single-line display of a quaternion
 
@@ -1182,17 +1187,26 @@ def qprint(q: Union[ArrayLike4, ArrayLike4], file=False, **kwargs) -> None:
         >>> q = qrand()   # a unit quaternion
         >>> qprint(q, delim=('<<', '>>'))
 
+    .. deprecated:: 1.1.15
+        ``file=None`` to get the string back without printing is
+        deprecated - call :func:`~q2str` directly instead.
+
     :seealso: :meth:`q2str`
     """
     q = smb.getvector(q, 4)
+    s = q2str(q, delim=delim, fmt=fmt)
     if file is None:
         warnings.warn(
             "Usage: qprint(..., file=None) -> str is deprecated, use q2str() instead",
             DeprecationWarning,
         )
-    if file is False:
-        file = None  # defaults to stdout
-    print(q2str(q, **kwargs), file=file)
+    else:
+        # file=False (the default) resolves to None here so print() looks
+        # up the *current* sys.stdout at call time, not whatever it was
+        # when this function was defined - that's what makes
+        # contextlib.redirect_stdout() work.
+        print(s, file=None if file is False else file)
+    return s
 
 
 if __name__ == "__main__":  # pragma: no cover
