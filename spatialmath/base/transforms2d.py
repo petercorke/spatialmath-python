@@ -16,6 +16,7 @@ tuple, numpy array, numpy row vector or numpy column vector.
 
 import sys
 import math
+import warnings
 import numpy as np
 
 try:
@@ -758,16 +759,16 @@ def trnorm2(T: SE2Array) -> SE2Array:
 
 
 @overload  # pragma: no cover
-def tradjoint2(T: SO2Array) -> R1x1:
+def tr2adjoint2(T: SO2Array) -> R1x1:
     ...
 
 
 @overload  # pragma: no cover
-def tradjoint2(T: SE2Array) -> R3x3:
+def tr2adjoint2(T: SE2Array) -> R3x3:
     ...
 
 
-def tradjoint2(T):
+def tr2adjoint2(T):
     r"""
     Adjoint matrix in 2D
 
@@ -816,6 +817,22 @@ def tradjoint2(T):
         # fmt: on
     else:
         raise ValueError("bad argument")
+
+
+def tradjoint2(T):
+    """
+    Adjoint matrix in 2D (deprecated)
+
+    .. deprecated:: 1.1.16
+        Renamed to :func:`tr2adjoint2` for naming consistency.  This alias
+        will be removed in a future release.
+    """
+    warnings.warn(
+        "tradjoint2 is deprecated since 1.1.16, use tr2adjoint2 instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return tr2adjoint2(T)
 
 
 def tr2jac2(T: SE2Array) -> R3x3:
