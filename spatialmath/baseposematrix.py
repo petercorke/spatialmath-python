@@ -337,11 +337,14 @@ class BasePoseMatrix(BasePoseList):
         """
         Logarithm of pose (superclass method)
 
+        :param twist: return twist coordinates vector rather than matrix, defaults to False
+        :type twist: bool, optional
         :return: logarithm
         :rtype: ndarray
         :raises: ValueError
 
-        An efficient closed-form solution of the matrix logarithm.
+        An efficient closed-form solution of the matrix logarithm.  By default the
+        result is a structured matrix
 
         =====  ======  ===============================
         Input         Output
@@ -352,19 +355,22 @@ class BasePoseMatrix(BasePoseList):
         SO3    (3,3)   skew-symmetric SE3    (4,4)   augmented skew-symmetric
         =====  ======  ===============================
 
+        but if ``twist=True`` the result is a vector, the twist coordinates, containing
+        the unique elements with translational elements first.  The rotational
+        elements are also known as the exponential coordinates of the rotation.
+
         Example::
 
-            >>> x = SE3.Rx(0.3)
-            >>> y = x.log()
-            >>> y
-            array([[ 0. , -0. ,  0. ,  0. ],
-                   [ 0. ,  0. , -0.3,  0. ],
-                   [-0. ,  0.3,  0. ,  0. ],
-                   [ 0. ,  0. ,  0. ,  0. ]])
+        .. runblock:: pycon
 
+            >>> from spatialmath import SO3, SE3
+            >>> T = SE3.Rx(0.3)
+            >>> T.log()
+            >>> T.log(twist=True)
+            >>> R = SO3.Rx(0.3)
+            >>> R.log(twist=True)  # exponential coordinates
 
-        :seealso: :func:`~spatialmath.base.transforms2d.trlog2`,
-        :func:`~spatialmath.base.transforms3d.trlog`
+        :seealso: :func:`~spatialmath.base.transforms2d.trlog2` :func:`~spatialmath.base.transforms3d.trlog`
 
         :SymPy: not supported
         """
@@ -395,6 +401,9 @@ class BasePoseMatrix(BasePoseList):
         :return: interpolated pose
         :rtype: same as ``self``
 
+        This interpolation is given by a scalar or the number of equally spaced
+        steps:
+
         - ``X.interp(Y, s)`` interpolates pose between X between when s=0
           and Y when s=1.
         - ``X.interp(Y, N)`` interpolates pose between X and Y in ``N`` steps.
@@ -417,6 +426,7 @@ class BasePoseMatrix(BasePoseList):
 
             - For SO3 and SE3 rotation is interpolated using quaternion spherical linear interpolation (slerp).
             - Values of ``s`` outside the range [0,1] are silently clipped
+
         :seealso: :func:`interp1`, :func:`~spatialmath.base.transforms3d.trinterp`, :func:`~spatialmath.base.quaternions.qslerp`, :func:`~spatialmath.base.transforms2d.trinterp2`
 
         :SymPy: not supported
@@ -707,8 +717,8 @@ class BasePoseMatrix(BasePoseList):
             >>> x.printline()
             >>> x = SE3.Rx([0.2, 0.3])
             >>> x.printline()
-            >>> x.printline('angvec')
-            >>> x.printline(orient='angvec', fmt="{:.6f}")
+            >>> x.printline(orient="angvec")
+            >>> x.printline(orient="angvec", fmt="{:.6f}")
             >>> x = SE2(1, 2, 0.3)
             >>> x.printline()
 

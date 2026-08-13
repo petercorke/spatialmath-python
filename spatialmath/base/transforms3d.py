@@ -326,6 +326,7 @@ def transl(x, y=None, z=None):
     .. note:: This function is compatible with the MATLAB version of the
         Toolbox.  It is unusual/weird in doing two completely different things
         inside the one function.
+
     :seealso: :func:`~spatialmath.base.transforms2d.transl2`
     :SymPy: supported
     """
@@ -3390,7 +3391,8 @@ if _matplotlib_exists:
         :type wait: bool
         :param movie: name of file to write MP4 movie into
         :type movie: str
-        :param **kwargs: arguments passed to ``trplot``
+        :param kwargs: arguments passed to ``trplot``
+        :type kwargs: dict
 
         - ``tranimate(T)`` where ``T`` is an SO(3) or SE(3) matrix, animates a 3D
           coordinate frame moving from the world frame to the frame ``T`` in

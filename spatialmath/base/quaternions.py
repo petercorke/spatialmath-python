@@ -1119,7 +1119,8 @@ def q2str(
     fmt: Optional[str] = "{: .4f}",
 ) -> str:
     """
-    Format a quaternion as a string
+    Convert quaternion to compact single-line string
+
 
     :arg q: unit-quaternion
     :type q: array_like(4)
