@@ -16,6 +16,7 @@ tuple, numpy array, numpy row vector or numpy column vector.
 
 import sys
 import math
+import warnings
 import numpy as np
 
 try:
@@ -715,13 +716,13 @@ def trnorm2(T: SE2Array) -> SE2Array:
     The steps in normalization are:
 
     #. If :math:`\mathbf{R} = [a, b]`
-    #. Form unit vectors :math:`\hat{b}
+    #. Form unit vectors :math:`\hat{b}`
     #. Form the orthogonal planar vector :math:`\hat{a} = [\hat{b}_y  -\hat{b}_x]`
     #. Form the normalized SO(2) matrix :math:`\mathbf{R} = [\hat{a}, \hat{b}]`
 
     .. runblock:: pycon
 
-        >>> from spatialmath.base import trnorm, troty
+        >>> from spatialmath.base import trnorm2, trot2
         >>> from numpy import linalg
         >>> T = trot2(45, 'deg', t=[3, 4])
         >>> linalg.det(T[:2,:2]) - 1 # is a valid SO(3)
@@ -758,16 +759,16 @@ def trnorm2(T: SE2Array) -> SE2Array:
 
 
 @overload  # pragma: no cover
-def tradjoint2(T: SO2Array) -> R1x1:
+def tr2adjoint2(T: SO2Array) -> R1x1:
     ...
 
 
 @overload  # pragma: no cover
-def tradjoint2(T: SE2Array) -> R3x3:
+def tr2adjoint2(T: SE2Array) -> R3x3:
     ...
 
 
-def tradjoint2(T):
+def tr2adjoint2(T):
     r"""
     Adjoint matrix in 2D
 
@@ -796,8 +797,8 @@ def tradjoint2(T):
         >>> tr2adjoint2(T)
 
     :Reference:
-        - Robotics, Vision & Control for Python, Section 3.1, P. Corke, Springer 2023.
-        - `Lie groups for 2D and 3D Transformations <http://ethaneade.com/lie.pdf>_
+        - *Robotics, Vision & Control for Python*, Section 3.1, P. Corke, Springer 2023.
+        - `*Lie groups for 2D and 3D Transformations* <http://ethaneade.com/lie.pdf>`_
 
     :SymPy: supported
     """
@@ -816,6 +817,22 @@ def tradjoint2(T):
         # fmt: on
     else:
         raise ValueError("bad argument")
+
+
+def tradjoint2(T):
+    """
+    Adjoint matrix in 2D (deprecated)
+
+    .. deprecated:: 1.1.16
+        Renamed to :func:`tr2adjoint2` for naming consistency.  This alias
+        will be removed in a future release.
+    """
+    warnings.warn(
+        "tradjoint2 is deprecated since 1.1.16, use tr2adjoint2 instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return tr2adjoint2(T)
 
 
 def tr2jac2(T: SE2Array) -> R3x3:
@@ -882,14 +899,14 @@ def trinterp2(start, end, s, shortest: bool = True):
     :rtype: ndarray(3,3) or ndarray(2,2)
     :raises ValueError: bad arguments
 
-    - ``trinterp2(None, T, S)`` is an SE(2) matrix interpolated
-      between identity when `S`=0 and `T`  when `S`=1.
-    - ``trinterp2(T0, T1, S)`` as above but interpolated
-      between `T0` when `S`=0 and `T1` when `S`=1.
-    - ``trinterp2(None, R, S)`` is an SO(2) matrix interpolated
-      between identity when `S`=0 and `R` when `S`=1.
-    - ``trinterp2(R0, R1, S)`` as above but interpolated
-      between `R0` when `S`=0 and `R1` when `S`=1.
+    - ``trinterp2(None, T, s)`` is an sE(2) matrix interpolated
+      between identity when `s=0` and `T`  when `s=1`.
+    - ``trinterp2(T0, T1, s)`` as above but interpolated
+      between `T0` when `s=0` and `T1` when `s=1`.
+    - ``trinterp2(None, R, s)`` is an sO(2) matrix interpolated
+      between identity when `s=0` and `R` when `s=1`.
+    - ``trinterp2(R0, R1, s)`` as above but interpolated
+      between `R0` when `s=0` and `R1` when `s=1`.
 
     .. note:: Rotation angle is linearly interpolated.
 

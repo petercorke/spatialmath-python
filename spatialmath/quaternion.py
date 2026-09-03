@@ -482,8 +482,9 @@ class Quaternion(BasePoseList):
         .. runblock:: pycon
 
             >>> from spatialmath import Quaternion
+            >>> import numpy as np
             >>> Quaternion([1,2,3,4]).inner(Quaternion([5,6,7,8]))
-            >>> numpy.dot([1,2,3,4], [5,6,7,8])
+            >>> np.dot([1,2,3,4], [5,6,7,8])
 
         :seealso: :func:`~spatialmath.base.quaternions.qinner`
         """
@@ -503,7 +504,8 @@ class Quaternion(BasePoseList):
 
         :return: Equality of two operands
         :rtype: bool or list of bool
-        ``q1 == q2`` is True if ``q1` is elementwise equal to ``q2``.
+
+        ``q1 == q2`` is True if ``q1` is elementwise-equal to ``q2``.
 
         Example:
 
@@ -673,7 +675,7 @@ class Quaternion(BasePoseList):
         :rtype: Quaternion instance
 
         ``q ** N`` computes the product of ``q`` with itself ``N-1`` times, where ``N`` must be
-        an integer.  If ``N``<0 the result is conjugated.
+        an integer.  If ``N`` < 0 the result is conjugated.
 
         Example:
 
@@ -1392,10 +1394,11 @@ class UnitQuaternion(Quaternion):
         :return: unit-quaternion
         :rtype: UnitQuaternion instance
 
-        ``UnitQuaternion.OA(O, A)`` is a unit quaternion that describes the 3D rotation defined in terms of
-        vectors parallel to the Y- and Z-axes of its reference frame.  In robotics these axes are
-        respectively called the orientation and approach vectors defined such that
-        R = [N O A] and N = O x A.
+        ``UnitQuaternion.OA(O, A)`` is a unit quaternion that describes the 3D rotation
+        defined in terms of vectors parallel to the Y- and Z-axes of its reference
+        frame, respectively :math:`\vec{o}` and :math:`\vec{a}`.  In robotics these axes
+        are respectively called the orientation and approach vectors defined such that
+        :math:`\mat{R}=[\vec{n}, \vec{o}, \vec{a}]` and :math:`\vec{n} = \vec{o} \times \vec{a}`.
 
         Example:
 
@@ -1407,7 +1410,7 @@ class UnitQuaternion(Quaternion):
         .. note::
 
             - Only the ``A`` vector is guaranteed to have the same direction in the resulting
-            rotation matrix
+              rotation matrix
             - ``O`` and ``A`` do not have to be unit-length, they are normalized
             - ``O`` and ``A` do not have to be orthogonal, so long as they are not parallel
 
@@ -1531,7 +1534,7 @@ class UnitQuaternion(Quaternion):
 
         .. runblock:: pycon
 
-            >>> from spatialmath import UnitQuaternion
+            >>> from spatialmath import UnitQuaternion as UQ
             >>> print(UQ.Rx(0.3).inv())
             >>> print(UQ.Rx(0.3).inv() * UQ.Rx(0.3))
             >>> print(UQ.Rx([0.3, 0.6]).inv())
@@ -1680,7 +1683,7 @@ class UnitQuaternion(Quaternion):
             >>> from spatialmath import UnitQuaternion as UQ
             >>> print(UQ.Rx(0.3) * UQ.Rx(0.4))
             >>> q = UQ.Rx(0.3)
-            >>> q *= UQ.Rx(0.4))
+            >>> q *= UQ.Rx(0.4)
             >>> print(q)
             >>> print(UQ.Rx(0.3) * UQ.Rx([0.4, 0.6]))
             >>> print(UQ.Rx([0.3, 0.6]) * UQ.Rx(0.3))
