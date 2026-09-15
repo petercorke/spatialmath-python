@@ -386,7 +386,7 @@ class SO3(BasePoseMatrix):
 
             >>> from spatialmath import SO3
             >>> import numpy as np
-            >>> x = SO3.Rx(np.linspace(0, math.pi, 20))
+            >>> x = SO3.Rx(np.linspace(0, np.pi, 20))
             >>> len(x)
             >>> x[7]
 
@@ -417,7 +417,7 @@ class SO3(BasePoseMatrix):
 
             >>> from spatialmath import SO3
             >>> import numpy as np
-            >>> x = SO3.Ry(np.linspace(0, math.pi, 20))
+            >>> x = SO3.Ry(np.linspace(0, np.pi, 20))
             >>> len(x)
             >>> x[7]
 
@@ -448,7 +448,7 @@ class SO3(BasePoseMatrix):
 
             >>> from spatialmath import SO3
             >>> import numpy as np
-            >>> x = SO3.Rz(np.linspace(0, math.pi, 20))
+            >>> x = SO3.Rz(np.linspace(0, np.pi, 20))
             >>> len(x)
             >>> x[7]
 
@@ -580,9 +580,9 @@ class SO3(BasePoseMatrix):
           correspond to successive rotations about the axes specified by
           ``order``:
 
-             - ``'zyx'`` [default], rotate by yaw about the z-axis, then by pitch about the new y-axis,
-               then by roll about the new x-axis.  Convention for a mobile robot with x-axis forward
-               and y-axis sideways.
+            - ``'zyx'`` [default], rotate by yaw about the z-axis, then by pitch about the new y-axis,
+              then by roll about the new x-axis.  Convention for a mobile robot with x-axis forward
+              and y-axis sideways.
             - ``'xyz'``, rotate by yaw about the x-axis, then by pitch about the new y-axis,
               then by roll about the new z-axis. Convention for a robot gripper with z-axis forward
               and y-axis between the gripper fingers.
@@ -621,7 +621,7 @@ class SO3(BasePoseMatrix):
 
     @classmethod
     def OA(cls, o: ArrayLike3, a: ArrayLike3) -> Self:
-        """
+        r"""
         Construct a new SO(3) from two vectors
 
         :param o: 3-vector parallel to Y- axis
@@ -631,19 +631,19 @@ class SO3(BasePoseMatrix):
         :return: SO(3) rotation
         :rtype: SO3 instance
 
-        ``SO3.OA(O, A)`` is an SO(3) rotation defined in terms of
-        vectors parallel to the Y- and Z-axes of its reference frame.  In robotics these axes are
+        ``SO3.OA(O, A)`` is an SO(3) rotation defined in terms of vectors parallel to
+        the Y- and Z-axes of its reference frame.  In robotics these axes are
         respectively called the *orientation* and *approach* vectors defined such that
-        R = [N, O, A] and N = O x A.
+        :math:`\mat{R}=[\vec{n}, \vec{o}, \vec{a}]` and :math:`\vec{n} = \vec{o} \times \vec{a}`.
 
         .. note::
 
             - Only the ``A`` vector is guaranteed to have the same direction in the resulting
-            rotation matrix
+              rotation matrix
             - ``O`` and ``A`` do not have to be unit-length, they are normalized
-            - ``O`` and ``A` do not have to be orthogonal, so long as they are not parallel
+            - ``O`` and ``A`` do not have to be orthogonal, so long as they are not parallel
 
-        :seealso: :func:`spatialmath.base.transforms3d.oa2r`
+        :seealso: :func:`~base.transforms3d.oa2r`
         """
         return cls(smb.oa2r(o, a), check=False)
 
@@ -881,9 +881,10 @@ class SO3(BasePoseMatrix):
           of twist vectors, one per row.
 
         .. note::
-        - if :math:`\theta \eq 0` the result in an identity matrix
-        - an input 3x3 matrix is ambiguous, it could be the first or third case above.  In this
-          case the parameter `so3` is the decider.
+
+            - if :math:`\theta \eq 0` the result in an identity matrix
+            - an input 3x3 matrix is ambiguous, it could be the first or third case above.  In this
+              case the parameter `so3` is the decider.
 
         :seealso: :func:`spatialmath.base.transforms3d.trexp`, :func:`spatialmath.base.transformsNd.skew`
         """
@@ -1064,15 +1065,17 @@ class SE3(SO3):
         - ``SE3(x, y, z)`` is a pure translation of (x,y,z)
         - ``SE3(T)``  where ``T`` is a 4x4 Numpy  array representing an SE(3)
           matrix.  If ``check`` is ``True`` check the matrix belongs to SE(3).
+
         - ``SE3([T1, T2, ... TN])`` has ``N`` values
           given by the elements ``Ti`` each of which is a 4x4 NumPy array
           representing an SE(3) matrix. If ``check`` is ``True`` check the
           matrix belongs to SE(3).
+
         - ``SE3(X)`` where ``X`` is:
-          -  ``SE3`` is a copy of ``X``
-          -  ``SO3`` is the rotation of ``X`` with zero translation
-          -  ``SE2`` is the z-axis rotation and x- and y-axis translation of
-             ``X``
+          - ``SE3`` is a copy of ``X``
+          - ``SO3`` is the rotation of ``X`` with zero translation
+          - ``SE2`` is the z-axis rotation and x- and y-axis translation of ``X``
+
         - ``SE3([X1, X2, ... XN])`` has ``N`` values
           given by the elements ``Xi`` each of which is an SE3 instance.
 
@@ -1818,7 +1821,7 @@ class SE3(SO3):
 
     @classmethod
     def AngleAxis(
-        cls, theta: float, v: ArrayLike3, *, unit: Optional[unit] = "rad"
+        cls, theta: float, v: ArrayLike3, *, unit: Optional[str] = "rad"
     ) -> SE3:
         r"""
         Create an SE(3) pure rotation matrix from rotation angle and axis
