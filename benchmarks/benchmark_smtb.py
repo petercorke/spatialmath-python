@@ -1,19 +1,93 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Micro-benchmarks for spatialmath: base functions and classes for SO(3),
+SE(3), quaternions and twists, plus a NumPy baseline.  Run from a checkout::
+
+    python benchmarks/benchmark_smtb.py
+
+The output starts with a summary of the machine and package versions, so a
+pasted table is self-describing.
+
 Created on Fri Apr 10 14:22:36 2020
 
 @author: Peter Corke
 """
 
-
+import os
+import platform
+import subprocess
 import timeit as _timeit
+
+import numpy as np
 from ansitable import ANSITable, Column
+
+import spatialmath
 
 N = 10_000
 REPEATS = 5
 
 table = None
+
+
+def cpu_info() -> str:
+    """Best-effort, portable one-line CPU description
+
+    :return: CPU name and core count, plus clock speed if available
+    :rtype: str
+
+    No new hard dependency: psutil is used for clock speed only if already
+    installed.  Some platforms (e.g. Apple Silicon) don't expose a single
+    meaningful clock speed, so a missing or nonsensical reading is omitted.
+    """
+    system = platform.system()
+    name = None
+
+    if system == "Darwin":
+        try:
+            name = subprocess.check_output(
+                ["sysctl", "-n", "machdep.cpu.brand_string"], text=True
+            ).strip()
+        except Exception:
+            pass
+    elif system == "Linux":
+        try:
+            with open("/proc/cpuinfo") as f:
+                for line in f:
+                    if line.lower().startswith("model name"):
+                        name = line.split(":", 1)[1].strip()
+                        break
+        except Exception:
+            pass
+    elif system == "Windows":
+        name = platform.processor() or None
+
+    if not name:
+        name = platform.processor() or platform.machine() or "unknown CPU"
+
+    info = f"{name} ({os.cpu_count() or '?'} cores)"
+
+    try:
+        import psutil
+
+        freq = psutil.cpu_freq()
+        # real clock speeds are hundreds to thousands of MHz; some platforms
+        # report bogus single-digit values instead of raising
+        if freq and freq.max and freq.max > 100:
+            info += f", {freq.max:.0f} MHz"
+    except Exception:
+        pass
+
+    return info
+
+
+def print_machine_summary() -> None:
+    print(f"CPU:          {cpu_info()}")
+    print(f"OS:           {platform.platform()}")
+    print(f"Python:       {platform.python_version()}")
+    print(f"numpy:        {np.__version__}")
+    print(f"spatialmath:  {spatialmath.__version__}")
+    print(f"Timing:       min of {REPEATS} repeats x {N} calls")
 
 
 def new_table():
@@ -40,6 +114,8 @@ def section(title):
     print(f"\n{title}\n")
     table = new_table()
 
+
+print_machine_summary()
 
 # ------------------------------------------------------------------------- #
 transforms_setup = '''
