@@ -73,6 +73,46 @@ class Test3D(unittest.TestCase):
 
         plt.close("all")
 
+    def test_plot_rejects_unknown_kwarg(self):
+        # trplot() used to silently swallow an unrecognized keyword via a
+        # bare **kwargs sink instead of raising -- e.g. a typo'd
+        # framelabel= (the real parameter is frame=) drew the frame with
+        # no label and no error at all.
+        with self.assertRaises(TypeError):
+            trplot(transl(1, 2, 3), framelabel="A", block=False)
+
+    def test_plot_anaglyph_forwards_params(self):
+        # the anaglyph branch recurses into trplot() for each eye; it used
+        # to forward only a small fixed subset of parameters (ax, frame,
+        # length, style, wtl, flo, d2), silently dropping textcolor,
+        # labels, originsize, origincolor, axislabel, axissubscript, width
+        # and projection for both eyes.
+        plt.figure()
+        ax = trplot(
+            transl(1, 2, 3),
+            frame="A",
+            anaglyph=True,
+            block=False,
+            textcolor="k",
+            originsize=0,
+        )
+        # frame label + 3 axis labels, per eye
+        self.assertEqual(len(ax.texts), 8)
+        self.assertTrue(all(t.get_color() == "k" for t in ax.texts))
+        plt.close("all")
+
+    def test_plot_iterable_forwards_axissubscript(self):
+        # the "T is an iterable of transforms" branch used to forward
+        # every named parameter except axissubscript when recursing per
+        # transform, so axissubscript=False on the outer call was ignored.
+        plt.figure()
+        T = [transl(1, 2, 3), transl(2, 3, 4)]
+        ax = trplot(T, frame="F", axissubscript=False, block=False)
+        axis_labels = [t.get_text() for t in ax.texts if t.get_text() != r"$\{F\}$"]
+        self.assertTrue(axis_labels)
+        self.assertTrue(all("_{" not in text for text in axis_labels))
+        plt.close("all")
+
     @pytest.mark.skipif(
         plt.get_backend().lower() == "agg"
         or os.environ.get("CI") == "true"

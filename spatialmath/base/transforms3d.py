@@ -3059,7 +3059,6 @@ if _matplotlib_exists:
         dims: Optional[ArrayLikePure] = None,
         d2: float = 1.15,
         flo: Tuple[float, float, float] = (-0.05, -0.05, -0.05),
-        **kwargs,
     ):
         """
         Plot a 3D coordinate frame
@@ -3247,6 +3246,9 @@ if _matplotlib_exists:
             ax.set_proj_type("persp")
 
             # collect all the arguments to use for left and right views
+            # note: dims is deliberately excluded, it was already applied to
+            # ax above; block is deliberately excluded and handled once
+            # below, after both eyes are drawn, rather than per-eye
             args = {
                 "ax": ax,
                 "frame": frame,
@@ -3255,8 +3257,15 @@ if _matplotlib_exists:
                 "wtl": wtl,
                 "flo": flo,
                 "d2": d2,
+                "textcolor": textcolor,
+                "labels": labels,
+                "originsize": originsize,
+                "origincolor": origincolor,
+                "axislabel": axislabel,
+                "axissubscript": axissubscript,
+                "width": width,
+                "projection": projection,
             }
-            args = {**args, **kwargs}
 
             # unpack the anaglyph parameters
             shift = 0.1
@@ -3278,7 +3287,11 @@ if _matplotlib_exists:
                 T = r2t(cast(SO3Array, T))
             trplot(transl(shift, 0, 0) @ T, color=colors[1], **args)
 
-            return
+            if block is not None:
+                import matplotlib.pyplot as plt
+
+                plt.show(block=block)
+            return ax
 
         if style == "rviz":
             if originsize is None:
@@ -3330,9 +3343,9 @@ if _matplotlib_exists:
                     flo=flo,
                     anaglyph=anaglyph,
                     axislabel=axislabel,
-                    **kwargs,
+                    axissubscript=axissubscript,
                 )
-            return
+            return ax
 
         if dims is not None:
             dims = tuple(dims)
@@ -3546,9 +3559,18 @@ if _matplotlib_exists:
         # alias for backward compatibility with the previous docstring/API
         dim = kwargs.pop("dim", kwargs.pop("dims", None))
         ax = kwargs.pop("ax", None)
+
+        # Animate.run()'s own parameters must not also be forwarded to
+        # trplot's drawing call, which now validates its keywords strictly
+        # (see Animate.run's signature for this parameter set)
+        run_kwargs = {
+            k: kwargs.pop(k)
+            for k in ("movie", "repeat", "interval", "nframes", "wait")
+            if k in kwargs
+        }
         anim = Animate(dim=dim, ax=ax, **kwargs)
         anim.trplot(T, **kwargs)
-        return anim.run(**kwargs)
+        return anim.run(**run_kwargs)
 
 
 if __name__ == "__main__":  # pragma: no cover
